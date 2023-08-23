@@ -25,6 +25,9 @@ export enum GithubEvent {
 
   // push event
   PUSH_EVENT = "push",
+
+  // merge group events
+  MERGE_GROUP = "merge_group",
 }
 
 export enum UserType {
