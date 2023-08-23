@@ -62,7 +62,7 @@ export const bindEvents = async (context: Context): Promise<void> => {
   log.info(`Started binding events... id: ${id}, name: ${eventName}, allowedEvents: ${allowedEvents}`);
 
   if (!allowedEvents.includes(eventName)) {
-    // just check if its on the watch list
+    // just check if its on the watch listt
     log.info(`Skipping the event. reason: not configured`);
     return;
   }
