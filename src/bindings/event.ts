@@ -34,7 +34,7 @@ export const bindEvents = async (context: Context): Promise<void> => {
   const payload = context.payload as Payload;
 
   botConfig = await loadConfig(context);
-
+  const { log } = getBotContext();
   const options = {
     app: "UbiquiBot",
     level: botConfig.log.level,
@@ -44,7 +44,7 @@ export const bindEvents = async (context: Context): Promise<void> => {
     return;
   }
 
-  logger.info(
+  log.info(
     `Config loaded! config: ${JSON.stringify({
       price: botConfig.price,
       unassign: botConfig.unassign,
@@ -56,16 +56,16 @@ export const bindEvents = async (context: Context): Promise<void> => {
   const allowedEvents = Object.values(GithubEvent) as string[];
   const eventName = payload.action ? `${name}.${payload.action}` : name; // some events wont have actions as this grows
 
-  logger.info(`Started binding events... id: ${id}, name: ${eventName}, allowedEvents: ${allowedEvents}`);
+  log.info(`Started binding events... id: ${id}, name: ${eventName}, allowedEvents: ${allowedEvents}`);
 
   if (!allowedEvents.includes(eventName)) {
     // just check if its on the watch list
-    logger.info(`Skipping the event. reason: not configured`);
+    log.info(`Skipping the event. reason: not configured`);
     return;
   }
 
   // Create adapters for telegram, supabase, twitter, discord, etc
-  logger.info("Creating adapters for supabase, telegram, twitter, etc...");
+  log.info("Creating adapters for supabase, telegram, twitter, etc...");
   adapters = createAdapters(botConfig);
 
   // Skip validation for installation event and push
@@ -74,7 +74,7 @@ export const bindEvents = async (context: Context): Promise<void> => {
     const validate = ajv.compile(PayloadSchema);
     const valid = validate(payload);
     if (!valid) {
-      logger.info("Payload schema validation failed!!!", payload);
+      log.info("Payload schema validation failed!!!", payload);
       if (validate.errors) logger.warn(validate.errors);
       return;
     }
@@ -82,7 +82,7 @@ export const bindEvents = async (context: Context): Promise<void> => {
     // Check if we should skip the event
     const { skip, reason } = shouldSkip();
     if (skip) {
-      logger.info(`Skipping the event. reason: ${reason}`);
+      log.info(`Skipping the event. reason: ${reason}`);
       return;
     }
   }
@@ -96,18 +96,18 @@ export const bindEvents = async (context: Context): Promise<void> => {
 
   const { pre, action, post } = handlers;
   // Run pre-handlers
-  logger.info(`Running pre handlers: ${pre.map((fn) => fn.name)}, event: ${eventName}`);
+  log.info(`Running pre handlers: ${pre.map((fn) => fn.name)}, event: ${eventName}`);
   for (const preAction of pre) {
     await preAction();
   }
   // Run main handlers
-  logger.info(`Running main handlers: ${action.map((fn) => fn.name)}, event: ${eventName}`);
+  log.info(`Running main handlers: ${action.map((fn) => fn.name)}, event: ${eventName}`);
   for (const mainAction of action) {
     await mainAction();
   }
 
   // Run post-handlers
-  logger.info(`Running post handlers: ${post.map((fn) => fn.name)}, event: ${eventName}`);
+  log.info(`Running post handlers: ${post.map((fn) => fn.name)}, event: ${eventName}`);
   for (const postAction of post) {
     await postAction();
   }
@@ -115,7 +115,7 @@ export const bindEvents = async (context: Context): Promise<void> => {
   // Skip wildcard handlers for installation event
   if (eventName !== GithubEvent.INSTALLATION_ADDED_EVENT) {
     // Run wildcard handlers
-    logger.info(`Running wildcard handlers: ${wildcardProcessors.map((fn) => fn.name)}`);
+    log.info(`Running wildcard handlers: ${wildcardProcessors.map((fn) => fn.name)}`);
     for (const wildcardProcessor of wildcardProcessors) {
       await wildcardProcessor();
     }
