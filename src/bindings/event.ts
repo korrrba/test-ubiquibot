@@ -54,6 +54,9 @@ export const bindEvents = async (context: Context): Promise<void> => {
     })}`
   );
   const allowedEvents = Object.values(GithubEvent) as string[];
+  log.info("-- raw event payload start --");
+  log.info(payload);
+  log.info("-- raw event payload end --");
   const eventName = payload.action ? `${name}.${payload.action}` : name; // some events wont have actions as this grows
 
   log.info(`Started binding events... id: ${id}, name: ${eventName}, allowedEvents: ${allowedEvents}`);
