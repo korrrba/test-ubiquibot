@@ -1,6 +1,6 @@
 # The UbiquiBot
 
-Ubiquity DAO's GitHub Bot to automate DevPool management.
+Ubiquity DAO's GitHub Bot to automate DevPool management..
 
 ## Quickstart
 
